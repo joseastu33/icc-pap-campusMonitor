@@ -1,4 +1,4 @@
-package main.java.icc.pap.u01;
+package icc.pap.u01;
 import java.util.function.*;
 //clase generica
 public class Caja<T> {
