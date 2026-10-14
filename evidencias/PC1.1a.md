@@ -11,6 +11,6 @@ Agregué las instancias de lectura con los diferentes argumentos de tipo, ademá
 los símbolos "|" y usando los getters de la clase. En App.java únicamente se colocan las instancias.
 
 # 2. Ejecución correcta
-
+![alt text](image.png)
 
 
