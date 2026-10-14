@@ -4,16 +4,18 @@
 package icc.pap.campusmonitor;
 
 import icc.pap.models.Lectura;
+import icc.pap.models.Reporte;
 
 public class App {
 
     public static void main(String[] args) {
        runLectura();
+       runTransformaciones();
     }
 
     public static void runLectura(){
-        Lectura<Double> temperatura = new Lectura<>("S01", 22.5, "°C");
-        Lectura<Integer> lectura1 = new Lectura<>("S02", 18, "personas");
+       Lectura<Double> temperatura = new Lectura<>("S01", 22.5, "°C");
+       Lectura<Integer> lectura1 = new Lectura<>("S02", 18, "personas");
 
        System.out.println("Lecturas de CampusMonitor");
        System.out.println(temperatura.getIdSensor() + " | " + temperatura.getValor() + " " + temperatura.getUnidad());
@@ -22,6 +24,55 @@ public class App {
        System.out.println("Valores recuperados sin casting:");
        System.out.println("Temperatura: " + temperatura.getValor());
        System.out.println("Ocupación: " + lectura1.getValor());
+    }
+    private static void runTransformaciones(){
+        Lectura<Double> temperatura = new Lectura<>("S01", 22.5, "°C");
+       Lectura<Integer> lectura1 = new Lectura<>("S02", 18, "personas");
 
+       Lectura<Double> fahrenheit = temperatura.transformar(cel -> cel * 9.0 / 5.0 + 32, "F");
+       Lectura<String> ocupacionTexto = lectura1.transformar(n -> n + "personas","texto");
+        
+       //conversion sin cast
+       String texto = ocupacionTexto.getValor(); 
+
+       //original y transformado: lectura 1
+       System.out.println("Original: " + temperatura.getIdSensor() + " | " + temperatura.getValor() + temperatura.getUnidad());
+
+       System.out.println("Transformado: " + fahrenheit.getIdSensor() + " | " 
+       + fahrenheit.getValor() + fahrenheit.getUnidad());
+       
+       //original y transformado: lectura 2
+       System.out.println("Original: " + lectura1.getIdSensor() + " | " 
+       + lectura1.getValor() +  lectura1.getUnidad());
+
+       System.out.println("Transformado: " + ocupacionTexto.getIdSensor() + " | " 
+       + texto + " | " + ocupacionTexto.getValor() );
+       
+       try {
+        temperatura.transformar(null, "°F");
+       } catch (IllegalArgumentException e) {
+            System.out.println(e.getMessage()); //mensaje de err
+       }
+       //probar valor nulo
+       try {
+        temperatura.transformar(c -> null, texto);
+       } catch (IllegalArgumentException e){
+        System.out.println(e.getMessage());
+       }
+
+       //probar la unidad vac a
+       try{
+        temperatura.transformar(c -> c * 9.0 / 5.0 + 32, ""); //no hay nueva unidad
+       } catch (IllegalArgumentException e){
+        System.out.println(e.getMessage());
+       }
+       
+       /*
+       si el dato era d - d + " "
+       ahora será d - Record (ahora sera un valor:  Reporte)
+       */
+      Lectura<Double> l1 = new Lectura<>("S01", 22.5, "°C");
+      Lectura<Reporte> transformadoReport = l1.transformar(
+         cel -> new Reporte(l1.getIdSensor(), cel, temperatura.getUnidad()), "reporte");
     }
 }
